@@ -1,144 +1,127 @@
 #include <iostream>
-#include <filesystem>
-#include <regex>
+#include <direct.h>
 #include <string>
+using namespace std;
 
-using namespace stsd;
-namespace fs = filesystem;
-
-void listAllFiles(const fs::path& directory) {
-   cout << "Files in directory: " << directory.string() << endl;
-    for (const auto& entry : fs::directory_iterator(directory)) {
-       cout << (entry.is_directory() ? "[DIR] " : "[FILE] ")
-                  << entry.path().filename().string() << endl;
-    }
-}
-
-void listFilesByExtension(const fs::path& directory, const std::string& extension) {
-   cout << "Files with extension " << extension << " in directory: " << directory.string() << endl;
-    for (const auto& entry : fs::directory_iterator(directory)) {
-        if (entry.path().extension() == extension) {
-            cout << entry.path().filename().string() << endl;
-        }
-    }
-}
-
-void listFilesByPattern(const fs::path& directory, const std::string& pattern) {
-   regex regexPattern(pattern);
-    cout << "Files matching pattern " << pattern << " in directory: " << directory.string() << endl;
-    for (const auto& entry : fs::directory_iterator(directory)) {
-        if (regex_match(entry.path().filename().string(), regexPattern)) {
-            cout << entry.path().filename().string() << endl;
-        }
-    }
-}
-
-void listFilesMenu(const fs::path& directory) {
-    cout << "1. List all files\n";
-   cout << "2. List files by extension\n";
-    cout << "3. List files by pattern\n";
-    cout << "Select an option: ";
-
-    int choice;
-    cin >> choice;
-    switch (choice) {
-        case 1:
-            listAllFiles(directory);
-            break;
-        case 2: {
-           string extension;
-            cout << "Enter the file extension (e.g., .txt): ";
-            cin >> extension;
-            listFilesByExtension(directory, extension);
-            break;
-        }
-        case 3: {
-            string pattern;
-            cout << "Enter the pattern (e.g., moha*.*): ";
-            cin >> pattern;
-            listFilesByPattern(directory, pattern);
-            break;
-        }
-        default:
-            cout << "Invalid option. Please try again." << std::endl;
-    }
-}
-
-void createDirectory(const fs::path& directory) {
-    if (fs::create_directory(directory)) {
-       cout << "Directory created: " << directory.string() << std::endl;
-    } else {
-        cout << "Failed to create directory or it already exists." << std::endl;
-    }
-}
-
-void changeDirectory(fs::path& currentPath) {
-    cout << "1. Move to the parent directory\n";
-    cout << "2. Move to the root directory\n";
-    cout << "3. Move to a specific directory\n";
-    cout << "Select an option: ";
-
-    int choice;
-    cin >> choice;
-    switch (choice) {
-        case 1:
-            currentPath = currentPath.parent_path();
-            break;
-        case 2:
-            currentPath = fs::path("/");
-            break;
-        case 3: {
-            string dirName;
-           cout << "Enter directory name to change to: ";
-            cin >> dirName;
-            fs::path newPath = currentPath / dirName;
-            if (fs::exists(newPath) && fs::is_directory(newPath)) {
-                currentPath = newPath;
-            } else {
-               cout << "Directory does not exist." << endl;
-            }
-            break;
-        }
-        default:
-            cout << "Invalid option. Please try again." << endl;
-    }
-   cout << "Current Directory: " << currentPath.string() << endl;
-}
+void File_list();
+void Direc_tory();
+void ChangeDIR();
 
 int main() {
-    fs::path currentPath = fs::current_path();
-
+    int Options;
     while (true) {
-        cout << "\nDirectory Management System\n";
-        cout << "Current Directory: " << currentPath.string() << std::endl;
-        cout << "1. List Files\n";
-        cout << "2. Create Directory\n";
-        cout << "3. Change Directory\n";
-        cout << "4. Exit\n";
-        cout << "Select an option: ";
+        cout << "      Main Menu:     " << endl;
+        cout << "--------------------------------"<< endl;
+        cout << "1. To Display List of Files"<< endl;
+        cout << "2. To Create New Directory"<< endl;
+        cout << "3. To Change the Working Directory"<< endl;
+        cout << "4. Exit Program"<< endl;
+        cout << "Enter Number: ";
+        cin >> Options;
 
-        int choice;
-        cin >> choice;
-
-        switch (choice) {
+        switch (Options) {
             case 1:
-                listFilesMenu(currentPath);
+                File_list();
                 break;
-            case 2: {
-                string dirName;
-                cout << "Enter directory name to create: ";
-                cin >> dirName;
-                createDirectory(currentPath / dirName);
+            case 2:
+                Direc_tory();
                 break;
-            }
             case 3:
-                changeDirectory(currentPath);
+                ChangeDIR();
                 break;
             case 4:
-                cout << "Exiting..." << endl;
                 return 0;
             default:
-                cout << "Invalid option. Please try again." << endl;
+                cout << "Invalid. PLEASE TRY AGAIN."<< endl;
         }
     }
+    return 0;
 }
+
+void File_list() {
+    int Options;
+    cout << "     LIST FILE DETAIL:" << endl;
+    cout << "--------------------------------------" << endl;
+    cout << "1. List All Files"<< endl;
+    cout << "2. List of Extension Files"<< endl;
+    cout << "3. List of Name Wise"<< endl;
+    cout << "Enter Number: ";
+    cin >> Options;
+
+
+	if(Options == 1){
+		cout<< " List of all files" << endl;
+		system("dir");
+}
+	else if (Options == 2){
+		string ext;
+		cout << " Enter file extension : ";
+		cin>> ext;
+		system(("dir *." + ext).c_str());
+}
+	else if(Options == 3){
+		string pattern;
+		cout<< " Enter file name pattern:";
+		cin >> pattern;
+		system(("dir " + pattern).c_str());
+}
+	else {
+		 cout << "Invalid. Please TRY AGAIN."<< endl;
+}
+		
+}
+
+
+void Direc_tory() {
+    string dir;
+    cout << "Directory name: ";
+    cin >> dir;
+
+    if (_mkdir(dir.c_str()) == 0) {
+        cout << "Directory created." << endl;
+    } else {
+        cout << "Error creating directory. It may already exist or be invalid." << endl;
+    }
+}
+
+void ChangeDIR() {
+    int command;
+    cout << "Change Directory Menu:" << endl;
+    cout << "1. Move one step back." << endl;
+    cout << "2. Move to the root directory." << endl;
+    cout << "3. Move to a specific directory provided by the user." << endl;
+    cout << "Enter your choice: ";
+    cin >> command;
+
+    switch (command) {
+        case 1:
+            if (_chdir("..") == 0) {
+                cout << "Moved to parent directory." << endl;
+            } else {
+                cout << "Error moving to parent directory." << endl;
+            }
+            break;
+        case 2:
+            if (_chdir("\\") == 0) {
+                cout << "Moved to root directory." << endl;
+            } else {
+                cout << "Error moving to root directory." << endl;
+            }
+            break;
+        case 3: {
+            string dir;
+            cout << "Directory name: ";
+            cin >> dir;
+            if (_chdir(dir.c_str()) == 0) {
+                cout << "Directory changed successfully." << endl;
+            } else {
+                cout << "ERROR changing directory. It may not exist." << endl;
+            }
+            break;
+        }
+        default:
+            cout << "Invalid, TRY AGAIN." << endl;
+    }
+    
+}
+
